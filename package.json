@@ -1,0 +1,43 @@
+{
+  "name": "sage",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sage - production-grade RAG pipeline for company documents",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "worker": "ts-node-dev --respawn --transpile-only src/worker.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint . --ext .ts,.tsx",
+    "migrate:init": "dotenv -e .env -- sh -c 'psql \"$DATABASE_URL\" -f db/migrations/001_init.sql'",
+    "migrate:chunks": "dotenv -e .env -- sh -c 'psql \"$DATABASE_URL\" -f db/migrations/002_chunks.sql'",
+    "migrate:monitoring": "dotenv -e .env -- sh -c 'psql \"$DATABASE_URL\" -f db/migrations/003_monitoring.sql'",
+    "migrate": "npm run migrate:init && npm run migrate:chunks && npm run migrate:monitoring",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "bullmq": "^5.0.0",
+    "fastify": "^4.28.1",
+    "dotenv": "^16.4.5",
+    "pg": "^8.12.0",
+    "pdf-parse": "^1.1.1",
+    "redis": "^4.7.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/dotenv": "^8.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.31.0",
+    "dotenv-cli": "^7.4.2",
+    "prettier": "^3.3.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.0"
+  }
+}
