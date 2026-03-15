@@ -1,16 +1,25 @@
+import Redis from 'ioredis';
 import { Worker } from 'bullmq';
 
+import { runIngestionJob } from './ingestion/job';
+import { INGESTION_QUEUE_NAME } from './ingestion/job';
+import type { IngestionJobPayload } from './ingestion/job';
 import { loadConfig } from './server-config';
 
 const config = loadConfig();
 
-// Placeholder worker; real jobs will be wired in later phases.
-// This file exists in Phase 0 so the worker entrypoint and Redis connection are validated.
+const connection = new Redis(config.REDIS_URL, { maxRetriesPerRequest: null });
 
-const connection = {
-  url: config.REDIS_URL,
-};
+const worker = new Worker<IngestionJobPayload>(
+  INGESTION_QUEUE_NAME,
+  async (job) => {
+    await runIngestionJob(job.data);
+  },
+  { connection },
+);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const dummyWorker = new Worker('sage-dummy', async () => {}, { connection });
+worker.on('failed', (job, err) => {
+  // eslint-disable-next-line no-console
+  console.error('Ingestion job failed', job?.id, err);
+});
 

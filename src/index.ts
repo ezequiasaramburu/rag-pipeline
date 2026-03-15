@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 
+import { registerDocumentsRoutes } from './api/documents';
 import { loadConfig } from './server-config';
 
 export async function buildServer() {
@@ -20,7 +21,7 @@ export async function buildServer() {
     };
   });
 
-  // TODO: add API routes in later phases
+  await registerDocumentsRoutes(app);
 
   return app;
 }
