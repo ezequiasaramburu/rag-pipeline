@@ -14,12 +14,16 @@ const envSchema = z.object({
   REDIS_URL: z.string().url(),
 
   VECTOR_STORE: z.enum(['pgvector', 'qdrant']),
-  QDRANT_URL: z.string().url().optional(),
+  QDRANT_URL: z.preprocess(
+    (val) => (val === '' || val === undefined ? undefined : val),
+    z.string().url().optional(),
+  ),
   QDRANT_API_KEY: z.string().optional(),
 
   EMBEDDING_PROVIDER: z.enum(['ollama', 'openai']),
   EMBEDDING_MODEL: z.string().min(1),
   OLLAMA_URL: z.string().url().optional(),
+  OPENAI_API_BASE_URL: z.string().url().optional(),
   OPENAI_API_KEY: z.string().optional(),
 
   LLM_PROVIDER: z.enum(['ollama', 'claude', 'openai', 'gemini']),
